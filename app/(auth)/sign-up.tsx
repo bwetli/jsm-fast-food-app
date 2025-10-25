@@ -5,19 +5,22 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import {Link} from "expo-router";
 import {tryCatchExample} from "@sentry/react-native/dist/js/playground/examples";
+import {createUser} from "@/lib/appwrite";
 
 const SignUp = () => {
     const [isSubmitting, setIsSubmitting  ] = useState(false);
     const [form, setForm] = useState({name: '', email: '', password: ''});
 
     const submit = async () => {
-        if(!form.name || !form.email || !form.password) return Alert.alert("Error", "Please enter valid name, email and password");
+        const {name, email, password} = form;
+
+        if(!name || !email || !password) return Alert.alert("Error", "Please enter valid name, email and password");
 
         setIsSubmitting(true);
 
         try {
-            // Call Appwrite Sign Up function
-            Alert.alert("Success", "You have successfully signed up");
+            await createUser({name, email, password});
+
             router.replace("/");
         } catch(error: any) {
             Alert.alert("Error", error.message);

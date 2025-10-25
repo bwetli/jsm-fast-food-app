@@ -5,22 +5,25 @@ import CustomButton from "@/components/CustomButton";
 import CustomInput from "@/components/CustomInput";
 import {Link} from "expo-router";
 import {tryCatchExample} from "@sentry/react-native/dist/js/playground/examples";
+import {signIn} from "@/lib/appwrite";
+import * as Sentry from "@sentry/react-native";
 
 const SignIn = () => {
     const [isSubmitting, setIsSubmitting  ] = useState(false);
     const [form, setForm] = useState({email: '', password: ''});
 
     const submit = async () => {
-        if(!form.email || !form.password) return Alert.alert("Error", "Please enter valid email and password");
+        const {email, password} = form;
+        if(!email || !password) return Alert.alert("Error", "Please enter valid email and password");
 
         setIsSubmitting(true);
 
         try {
-            // Call Appwrite Sign in function
-            Alert.alert("Success", "You have successfully signed in");
+            await signIn({email, password});
             router.replace("/");
         } catch(error: any) {
             Alert.alert("Error", error.message);
+            Sentry.captureEvent(error);
         } finally {
             setIsSubmitting(false);
         }
